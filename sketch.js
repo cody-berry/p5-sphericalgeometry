@@ -13,6 +13,8 @@ version comments
  */
 let font
 let radius
+let cam
+
 
 function preload() {
     font = loadFont('fonts/Meiryo-01.ttf')
@@ -21,14 +23,14 @@ function preload() {
 function setup() {
     createCanvas(640, 360, WEBGL)
     colorMode(HSB, 360, 100, 100, 100)
+    cam = new Dw.EasyCam(this._renderer, {distance:500, center:[0,0,0]});
+    fill(234, 34, 24)
 }
 
 function draw() {
     background(234, 34, 24)
 
     radius = 150
-
-    noFill()
 
     sphere(radius)
 
