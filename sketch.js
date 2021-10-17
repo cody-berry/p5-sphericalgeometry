@@ -15,7 +15,7 @@ version comments
 let font
 let radius
 let cam
-let red_hue, blue_hue, green_hue, red_sat, blue_sat, green_sat
+let x_hue, z_hue, y_hue, x_sat, z_sat, y_sat
 const BRIGHT = 80
 const DARK = 40
 const BOUNDARY = 1000000000
@@ -47,39 +47,48 @@ function draw() {
 
     stroke(0, 0, 50)
     sphere(radius)
+    cam.beginHUD(this._renderer, width, height)
+    // x
+    fill(x_hue, x_sat, BRIGHT)
+    text("x", 10, height-40)
+    // y
+    fill(y_hue, y_sat, BRIGHT)
+    text("y", 10, height-30)
+    // z
+    fill(z_hue, z_sat, BRIGHT)
+    text("z", 10, height-20)
+    cam.endHUD()
 }
 
 function drawBlenderAxisAndText() {
-    red_hue = 0
-    red_sat = 70
-    green_hue = 90
-    green_sat = 80
-    blue_hue = 210
-    blue_sat = 90
+    x_hue = 0
+    x_sat = 70
+    y_hue = 90
+    y_sat = 80
+    z_hue = 210
+    z_sat = 90
 
     // now we can draw our lines! ...and our axis text.
     // x
     // positive
-    stroke(red_hue, red_sat, BRIGHT)
+    stroke(x_hue, x_sat, BRIGHT)
     line(0, 0, 0, BOUNDARY, 0, 0)
     // negative
-    stroke(red_hue, red_sat, DARK)
+    stroke(x_hue, x_sat, DARK)
     line(0, 0, 0, -BOUNDARY, 0, 0)
-    // text
-    fill(red_hue, red_sat, 50)
     // y
     // positive
-    stroke(green_hue, green_sat, BRIGHT)
+    stroke(y_hue, y_sat, BRIGHT)
     line(0, 0, 0, 0, BOUNDARY, 0)
     // negative
-    stroke(green_hue, green_sat, DARK)
+    stroke(y_hue, y_sat, DARK)
     line(0, 0, 0, 0, -BOUNDARY, 0)
     // z
     // positive
-    stroke(blue_hue, blue_sat, BRIGHT)
+    stroke(z_hue, z_sat, BRIGHT)
     line(0, 0, 0, 0, 0, BOUNDARY)
     // negative
-    stroke(blue_hue, blue_sat, DARK)
+    stroke(z_hue, z_sat, DARK)
     line(0, 0, 0, 0, 0, -BOUNDARY)
 }
 
