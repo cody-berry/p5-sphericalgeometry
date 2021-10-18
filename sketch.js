@@ -9,7 +9,7 @@ This project is simply the sphere function, but we're recreating everything.
 version comments
 .   use the sphere function, easyCam
 .   axis, text
-    make points using latitude and longitude
+.   make points using latitude and longitude
     make triangles using a separate loop
     make adjustable square pyramid
     Adam!!!!
@@ -21,7 +21,7 @@ let x_hue, z_hue, y_hue, x_sat, z_sat, y_sat
 const BRIGHT = 80
 const DARK = 40
 const BOUNDARY = 10000
-const detail = 24
+const detail = 36
 // globe is going to be a two-D array...
 let globe = Array(detail+1)
 // ...so let's fill it!
@@ -60,11 +60,11 @@ function draw() {
     for (let i = 0; i < globe.length; i++) {
         // let's define our longitude here!
         // φ ranges from 0 to TAU.
-        φ = map(i, 0, globe.length, 0, PI)
+        φ = map(i, 0, globe.length-1, 0, PI)
         for (let j = 0; j < globe[i].length; j++) {
             // let's define our latitude here!
             // θ ranges from 0 to PI.
-            θ = map(j, 0, globe[i].length, 0, TAU)
+            θ = map(j, 0, globe[i].length-1, 0, TAU)
 
             // Now, we can use formulas to compute our x, our y, and our z
             // coordinates.
@@ -77,18 +77,30 @@ function draw() {
         }
     }
 
-    let v
+    let v1, v2, v3, v4
 
     stroke(0, 0, 50)
+    noFill()
+
+    beginShape()
 
     // Here's where we're showing everything!
-    for (let i = 0; i < globe.length; i++) {
-        for (let j = 0; j < globe[i].length; j++) {
-            v = globe[i][j]
-            // let's draw points along the sphere!
-            point(v.x, v.y, v.z)
+    for (let i = 0; i < globe.length-1; i++) {
+        for (let j = 0; j < globe[i].length-1; j++) {
+            v1 = globe[i][j]
+            v2 = globe[i+1][j]
+            v3 = globe[i+1][j+1]
+            v4 = globe[i][j+1]
+            // let's draw points along the sphere!x
+
+            vertex(v1.x, v1.y, v1.z)
+            vertex(v2.x, v2.y, v2.z)
+            vertex(v3.x, v3.y, v3.z)
+            vertex(v4.x, v4.y, v4.z)
         }
     }
+
+    endShape()
 
     // let's draw the text!
     cam.beginHUD(this._renderer, width, height) //
