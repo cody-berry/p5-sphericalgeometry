@@ -21,13 +21,16 @@ let x_hue, z_hue, y_hue, x_sat, z_sat, y_sat
 const BRIGHT = 80
 const DARK = 40
 const BOUNDARY = 10000
-const detail = 36
+const detail = 16
 // globe is going to be a two-D array...
 let globe = Array(detail+1)
 // ...so let's fill it!
 for (let i = 0; i < globe.length; i++) {
     globe[i] = Array(detail+1)
 }
+
+let x_pyramid_index = 3
+let y_pyramid_index = 3
 
 
 function preload() {
@@ -91,7 +94,7 @@ function draw() {
             v2 = globe[i+1][j]
             v3 = globe[i+1][j+1]
             v4 = globe[i][j+1]
-            // let's draw points along the sphere!x
+            // let's draw points along the sphere!
 
             vertex(v1.x, v1.y, v1.z)
             vertex(v2.x, v2.y, v2.z)
@@ -101,6 +104,46 @@ function draw() {
     }
 
     endShape()
+
+    // let's fill our pyramid base!
+    let v5, v6, v7, v8
+
+    fill(0, 0, 100)
+    noStroke()
+
+    beginShape()
+
+    v5 = globe[x_pyramid_index][y_pyramid_index]
+    v6 = globe[x_pyramid_index+1][y_pyramid_index]
+    v7 = globe[x_pyramid_index+1][y_pyramid_index+1]
+    v8 = globe[x_pyramid_index][y_pyramid_index+1]
+
+    vertex(v5.x, v5.y, v5.z)
+    vertex(v6.x, v6.y, v6.z)
+    vertex(v7.x, v7.y, v7.z)
+    vertex(v8.x, v8.y, v8.z)
+
+    endShape(CLOSE)
+
+    // we need to draw the base triangles
+    fill(0, 0, 100, 50)
+    beginShape()
+    vertex(v5.x, v5.y, v5.z)
+    vertex(0, 0, 0)
+    vertex(v6.x, v6.y, v6.z)
+    endShape(CLOSE)
+    beginShape()
+    vertex(v6.x, v6.y, v6.z)
+    vertex(0, 0, 0)
+    vertex(v7.x, v7.y, v7.z)
+    endShape(CLOSE)
+    beginShape()
+    vertex(v7.x, v7.y, v7.z)
+    vertex(0, 0, 0)
+    vertex(v8.x, v8.y, v8.z)
+    endShape(CLOSE)
+    beginShape()
+
 
     // let's draw the text!
     cam.beginHUD(this._renderer, width, height) //
