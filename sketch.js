@@ -10,27 +10,23 @@ version comments
 .   use the sphere function, easyCam
 .   axis, text
 .   make points using latitude and longitude
-    make triangles using a separate loop
-    make adjustable square pyramid
+.   make triangles using a separate loop
+.   make adjustable square pyramid
     Adam!!!!
  */
 let font
-let r
 let cam
 let x_hue, z_hue, y_hue, x_sat, z_sat, y_sat
 const BRIGHT = 80
 const DARK = 40
 const BOUNDARY = 10000
-const detail = 16
+const detail = 15
 // globe is going to be a two-D array...
 let globe = Array(detail+1)
 // ...so let's fill it!
 for (let i = 0; i < globe.length; i++) {
-    globe[i] = Array(detail+1)
+    globe[i] = Array((detail+1)*2)
 }
-
-let x_pyramid_index = 3
-let y_pyramid_index = 3
 
 
 function preload() {
@@ -50,8 +46,6 @@ function draw() {
     background(234, 34, 24)
     drawBlenderAxisAndText()
 
-    r = 150
-
     let φ, θ, x, y, z
 
     // let's reset our stroke!
@@ -63,17 +57,17 @@ function draw() {
     for (let i = 0; i < globe.length; i++) {
         // let's define our longitude here!
         // φ ranges from 0 to TAU.
-        φ = map(i, 0, globe.length-1, 0, PI)
+        θ = map(i, 0, globe.length-1, 0, PI)
         for (let j = 0; j < globe[i].length; j++) {
             // let's define our latitude here!
             // θ ranges from 0 to PI.
-            θ = map(j, 0, globe[i].length-1, 0, TAU)
+            φ = map(j, 0, globe[i].length-1, 0, PI)
 
             // Now, we can use formulas to compute our x, our y, and our z
             // coordinates.
-            x = r*sin(φ)*cos(θ)
-            y = r*sin(φ)*sin(θ)
-            z = r*cos(φ)
+            x = sin(φ)*cos(θ)
+            y = sin(φ)*sin(θ)
+            z = cos(φ)
 
             // Yay! Now we can set it to globe[i][j].
             globe[i][j] = new p5.Vector(x, y, z)
@@ -83,66 +77,88 @@ function draw() {
     let v1, v2, v3, v4
 
     stroke(0, 0, 50)
-    noFill()
 
-    beginShape()
-
-    // Here's where we're showing everything!
-    for (let i = 0; i < globe.length-1; i++) {
-        for (let j = 0; j < globe[i].length-1; j++) {
-            v1 = globe[i][j]
-            v2 = globe[i+1][j]
-            v3 = globe[i+1][j+1]
-            v4 = globe[i][j+1]
-            // let's draw points along the sphere!
-
-            vertex(v1.x, v1.y, v1.z)
-            vertex(v2.x, v2.y, v2.z)
-            vertex(v3.x, v3.y, v3.z)
-            vertex(v4.x, v4.y, v4.z)
-        }
-    }
-
-    endShape()
+    // beginShape()
+    //
+    // // Here's where we're showing everything!
+    // for (let i = 0; i < globe.length-1; i++) {
+    //     for (let j = 0; j < globe[i].length-1; j++) {
+    //         v1 = globe[i][j]
+    //         v2 = globe[i+1][j]
+    //         v3 = globe[i+1][j+1]
+    //         v4 = globe[i][j+1]
+    //         // let's draw points along the sphere!
+    //
+    //         vertex(v1.x, v1.y, v1.z)
+    //         vertex(v2.x, v2.y, v2.z)
+    //         vertex(v3.x, v3.y, v3.z)
+    //         vertex(v4.x, v4.y, v4.z)
+    //     }
+    // }
+    //
+    // endShape()
 
     // let's fill our pyramid base!
-    let v5, v6, v7, v8
 
     fill(0, 0, 100)
     noStroke()
 
-    beginShape()
+    let inc_x = 1
+    let inc_y = 2
+    let max_r = 50
 
-    v5 = globe[x_pyramid_index][y_pyramid_index]
-    v6 = globe[x_pyramid_index+1][y_pyramid_index]
-    v7 = globe[x_pyramid_index+1][y_pyramid_index+1]
-    v8 = globe[x_pyramid_index][y_pyramid_index+1]
+    for (let x_index = 0; x_index < globe.length-inc_x; x_index+=inc_x) {
+        for (let y_index = 0; y_index < globe[x_index].length-inc_y; y_index+=inc_y) {
+            fill(210, 100, 20)
 
-    vertex(v5.x, v5.y, v5.z)
-    vertex(v6.x, v6.y, v6.z)
-    vertex(v7.x, v7.y, v7.z)
-    vertex(v8.x, v8.y, v8.z)
+            let x = x_index - (globe.length-1)/2
+            let y = y_index - (globe[x_index].length-1)/2
 
-    endShape(CLOSE)
 
-    // we need to draw the base triangles
-    fill(0, 0, 100, 50)
-    beginShape()
-    vertex(v5.x, v5.y, v5.z)
-    vertex(0, 0, 0)
-    vertex(v6.x, v6.y, v6.z)
-    endShape(CLOSE)
-    beginShape()
-    vertex(v6.x, v6.y, v6.z)
-    vertex(0, 0, 0)
-    vertex(v7.x, v7.y, v7.z)
-    endShape(CLOSE)
-    beginShape()
-    vertex(v7.x, v7.y, v7.z)
-    vertex(0, 0, 0)
-    vertex(v8.x, v8.y, v8.z)
-    endShape(CLOSE)
-    beginShape()
+
+            beginShape()
+            v1 = globe[x_index][y_index]
+            v2 = globe[x_index + inc_x][y_index]
+            v3 = globe[x_index + inc_x][y_index + inc_y]
+            v4 = globe[x_index][y_index + inc_y]
+
+            let psf
+
+            // we need a radius modifier
+            if (sqrt(v1.x*v1.x + v1.z*v1.z) < max_r) {
+                psf = 100 + 10 * sin(sqrt(x * x +
+                    y * y) + frameCount / 20)
+            } else {
+                psf = 100
+            }
+
+            vertex(v1.x*psf, v1.y*psf, v1.z*psf)
+            vertex(v2.x*psf, v2.y*psf, v2.z*psf)
+            vertex(v3.x*psf, v3.y*psf, v3.z*psf)
+            vertex(v4.x*psf, v4.y*psf, v4.z*psf)
+
+            endShape(CLOSE)
+
+            // we need to draw the base triangles
+            fill(180, 100, 100)
+            beginShape()
+            vertex(v1.x*psf, v1.y*psf, v1.z*psf)
+            vertex(0, 0, 0)
+            vertex(v2.x*psf, v2.y*psf, v2.z*psf)
+            endShape(CLOSE)
+            beginShape()
+            vertex(v2.x*psf, v2.y*psf, v2.z*psf)
+            vertex(0, 0, 0)
+            vertex(v3.x*psf, v3.y*psf, v3.z*psf)
+            endShape(CLOSE)
+            beginShape()
+            vertex(v3.x*psf, v3.y*psf, v3.z*psf)
+            vertex(0, 0, 0)
+            vertex(v4.x*psf, v4.y*psf, v4.z*psf)
+            endShape(CLOSE)
+            beginShape()
+        }
+    }
 
 
     // let's draw the text!
