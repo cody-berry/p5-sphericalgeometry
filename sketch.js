@@ -27,6 +27,8 @@ let globe = Array(detail+1)
 for (let i = 0; i < globe.length; i++) {
     globe[i] = Array((detail+1)*2)
 }
+// what is our angle for our Adam?
+let angle = 0
 
 
 function preload() {
@@ -57,11 +59,11 @@ function draw() {
     for (let i = 0; i < globe.length; i++) {
         // let's define our longitude here!
         // φ ranges from 0 to TAU.
-        θ = map(i, 0, globe.length-1, 0, PI)
+        φ = map(i, 0, globe.length-1, 0, PI)
         for (let j = 0; j < globe[i].length; j++) {
             // let's define our latitude here!
             // θ ranges from 0 to PI.
-            φ = map(j, 0, globe[i].length-1, 0, PI)
+            θ = map(j, 0, globe[i].length-1, 0, PI)
 
             // Now, we can use formulas to compute our x, our y, and our z
             // coordinates.
@@ -110,26 +112,33 @@ function draw() {
     for (let x_index = 0; x_index < globe.length-inc_x; x_index+=inc_x) {
         for (let y_index = 0; y_index < globe[x_index].length-inc_y; y_index+=inc_y) {
             fill(210, 100, 20)
-
-            let x = x_index - (globe.length-1)/2
-            let y = y_index - (globe[x_index].length-1)/2
-
-
-
             beginShape()
             v1 = globe[x_index][y_index]
             v2 = globe[x_index + inc_x][y_index]
             v3 = globe[x_index + inc_x][y_index + inc_y]
             v4 = globe[x_index][y_index + inc_y]
 
+
+            // what is the average of our 4 vertices
+            let avg = new p5.Vector(
+                (v1.x+v2.x+v3.x+v4.x)/4,
+                (v1.y+v2.y+v3.y+v4.y)/4,
+                (v1.z+v2.z+v3.z+v4.z)/4
+            )
+
             let psf
 
+            let distance = sqrt(avg.x*avg.x + avg.z*avg.z)
+
+            // we want our angle to increase by distance*40 because we want
+            // to have every square have a different angle
+            angle += distance*40
+
             // we need a radius modifier
-            if (sqrt(v1.x*v1.x + v1.z*v1.z) < max_r) {
-                psf = 100 + 10 * sin(sqrt(x * x +
-                    y * y) + frameCount / 20)
-            } else {
+            if (distance >= 0.5) {
                 psf = 100
+            } else {
+                psf = 100 + 10 * sin(angle)
             }
 
             vertex(v1.x*psf, v1.y*psf, v1.z*psf)
@@ -157,6 +166,8 @@ function draw() {
             vertex(v4.x*psf, v4.y*psf, v4.z*psf)
             endShape(CLOSE)
             beginShape()
+            // we don't want a clobber effect, so let's revert our addition
+            angle -= distance*40
         }
     }
 
@@ -173,6 +184,13 @@ function draw() {
     fill(z_hue, z_sat, BRIGHT) //
     text("z", 10, height-20) //
     cam.endHUD() //
+
+    strokeWeight(17)
+    stroke(0, 0, 100)
+    point(0, 0, 0)
+
+    // let's update our angle!
+    angle += 0.01
 }
 
 function drawBlenderAxisAndText() {
@@ -182,6 +200,8 @@ function drawBlenderAxisAndText() {
     y_sat = 80
     z_hue = 210
     z_sat = 90
+
+    strokeWeight(3)
 
     // now we can draw our lines! ...and our axis text.
     // x
