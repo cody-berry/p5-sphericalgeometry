@@ -12,7 +12,7 @@ version comments
 .|          make points using latitude and longitude
 .|          make triangles using a separate loop
 .|          make adjustable square pyramid
-.|.|.|.|.|*|Adam!!!!
+.|.|.|.|.|0|Adam!!!!
  */
 let font
 let cam
@@ -176,6 +176,10 @@ function draw() {
         }
     }
 
+    // let's add a circular background to our sphere
+    fill(180, 100, 100)
+    rotateX(PI/2)
+    circle(0, 0, 200)
 
     // let's draw the text!
     cam.beginHUD(this._renderer, width, height) //
