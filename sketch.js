@@ -7,12 +7,12 @@
 This project is simply the sphere function, but we're recreating everything.
 
 version comments
-.   use the sphere function, easyCam
-.   axis, text
-.   make points using latitude and longitude
-.   make triangles using a separate loop
-.   make adjustable square pyramid
-    Adam!!!!
+.|          use the sphere function, easyCam
+.|          axis, text
+.|          make points using latitude and longitude
+.|          make triangles using a separate loop
+.|          make adjustable square pyramid
+.|.|.|.|.|*|Adam!!!!
  */
 let font
 let cam
@@ -20,7 +20,7 @@ let x_hue, z_hue, y_hue, x_sat, z_sat, y_sat
 const BRIGHT = 80
 const DARK = 40
 const BOUNDARY = 10000
-const detail = 15
+const detail = 24
 // globe is going to be a two-D array...
 let globe = Array(detail+1)
 // ...so let's fill it!
@@ -29,6 +29,8 @@ for (let i = 0; i < globe.length; i++) {
 }
 // what is our angle for our Adam?
 let angle = 0
+// what is our amplitude?
+let amp
 
 
 function preload() {
@@ -111,7 +113,6 @@ function draw() {
 
     for (let x_index = 0; x_index < globe.length-inc_x; x_index+=inc_x) {
         for (let y_index = 0; y_index < globe[x_index].length-inc_y; y_index+=inc_y) {
-            fill(210, 100, 20)
             beginShape()
             v1 = globe[x_index][y_index]
             v2 = globe[x_index + inc_x][y_index]
@@ -138,34 +139,38 @@ function draw() {
             if (distance >= 0.5) {
                 psf = 100
             } else {
-                psf = 100 + 10 * sin(angle)
+                // what is our amplitude?
+                amp = map(distance, 0, 0.5, 10, 0)
+                psf = 97 + amp * sin(angle)
+
+
+                // we need to draw the base triangles
+                fill(180, 100, 100)
+                beginShape()
+                vertex(v1.x * psf, v1.y * psf, v1.z * psf)
+                vertex(0, 0, 0)
+                vertex(v2.x * psf, v2.y * psf, v2.z * psf)
+                endShape(CLOSE)
+                beginShape()
+                vertex(v2.x * psf, v2.y * psf, v2.z * psf)
+                vertex(0, 0, 0)
+                vertex(v3.x * psf, v3.y * psf, v3.z * psf)
+                endShape(CLOSE)
+                beginShape()
+                vertex(v3.x * psf, v3.y * psf, v3.z * psf)
+                vertex(0, 0, 0)
+                vertex(v4.x * psf, v4.y * psf, v4.z * psf)
+                endShape(CLOSE)
+                beginShape()
             }
 
+            fill(210, 100, 20)
             vertex(v1.x*psf, v1.y*psf, v1.z*psf)
             vertex(v2.x*psf, v2.y*psf, v2.z*psf)
             vertex(v3.x*psf, v3.y*psf, v3.z*psf)
             vertex(v4.x*psf, v4.y*psf, v4.z*psf)
 
             endShape(CLOSE)
-
-            // we need to draw the base triangles
-            fill(180, 100, 100)
-            beginShape()
-            vertex(v1.x*psf, v1.y*psf, v1.z*psf)
-            vertex(0, 0, 0)
-            vertex(v2.x*psf, v2.y*psf, v2.z*psf)
-            endShape(CLOSE)
-            beginShape()
-            vertex(v2.x*psf, v2.y*psf, v2.z*psf)
-            vertex(0, 0, 0)
-            vertex(v3.x*psf, v3.y*psf, v3.z*psf)
-            endShape(CLOSE)
-            beginShape()
-            vertex(v3.x*psf, v3.y*psf, v3.z*psf)
-            vertex(0, 0, 0)
-            vertex(v4.x*psf, v4.y*psf, v4.z*psf)
-            endShape(CLOSE)
-            beginShape()
             // we don't want a clobber effect, so let's revert our addition
             angle -= distance*40
         }
@@ -183,14 +188,10 @@ function draw() {
     // z
     fill(z_hue, z_sat, BRIGHT) //
     text("z", 10, height-20) //
-    cam.endHUD() //
-
-    strokeWeight(17)
-    stroke(0, 0, 100)
-    point(0, 0, 0)
+    cam.endHUD()
 
     // let's update our angle!
-    angle += 0.01
+    angle += 1/20
 }
 
 function drawBlenderAxisAndText() {
