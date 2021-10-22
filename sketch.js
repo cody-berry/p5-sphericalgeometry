@@ -25,7 +25,7 @@ const detail = 24
 let globe = Array(detail+1)
 // ...so let's fill it!
 for (let i = 0; i < globe.length; i++) {
-    globe[i] = Array((detail+1)*2)
+    globe[i] = Array(detail+1)
 }
 // what is our angle for our Adam?
 let angle = 0
@@ -108,7 +108,7 @@ function draw() {
     noStroke()
 
     let inc_x = 1
-    let inc_y = 2
+    let inc_y = 1
     let max_r = 50
 
     for (let x_index = 0; x_index < globe.length-inc_x; x_index+=inc_x) {
@@ -136,12 +136,13 @@ function draw() {
             angle += distance*40
 
             // we need a radius modifier
-            if (distance >= 0.5) {
+            if (distance >= max_r/100) {
                 psf = 100
             } else {
                 // what is our amplitude?
-                amp = map(distance, 0, 0.5, 10, 0)
-                psf = 97 + amp * sin(angle)
+                amp = map(distance, 0, max_r/100, 10, 0)
+                let radius = map(amp, 0, 10, 100, 95)
+                psf = radius + amp * sin(angle)
 
 
                 // we need to draw the base triangles
