@@ -7,12 +7,12 @@
 This project is simply the sphere function, but we're recreating everything.
 
 version comments
-.|          use the sphere function, easyCam
-.|          axis, text
-.|          make points using latitude and longitude
-.|          make triangles using a separate loop
-.|          make adjustable square pyramid
-.|.|.|.|.|0|Adam!!!!
+.           use the sphere function, easyCam
+.           axis, text
+.           make points using latitude and longitude
+.           make triangles using a separate loop
+.           make adjustable square pyramid
+|           Adam!!!!
  */
 let font
 let cam
@@ -49,13 +49,20 @@ function setup() {
 function draw() {
     background(234, 34, 24)
     drawBlenderAxisAndText()
+    // let's light up the room!
+    ambientLight(250)
+    directionalLight(0, 0, 10, .5, 1, 0)
+    // let's also make light material.
+    specularMaterial(223, 34, 24) // specular material reflects less light.
+    // On the contrary, it lights up more.
+    shininess(100)
 
     let φ, θ, x, y, z
 
     // let's reset our stroke!
     stroke(0, 0, 0)
     // ...and the fill.
-    noFill()
+    fill(234, 34, 24)
 
     // Alright, let's fill our 2D array with PVectors!
     for (let i = 0; i < globe.length; i++) {
@@ -141,9 +148,11 @@ function draw() {
             } else {
                 // what is our amplitude?
                 amp = map(distance, 0, max_r/100, 10, 0)
+                // also, we want our default radius to give a smoother
+                // transition from the outer-most face that is moving and
+                // the inner-most face that isn't moving.
                 let radius = map(amp, 0, 10, 100, 95)
                 psf = radius + amp * sin(angle)
-
 
                 // we need to draw the base triangles
                 fill(180, 100, 100)
