@@ -12,7 +12,7 @@ version comments
 .           make points using latitude and longitude
 .           make triangles using a separate loop
 .           make adjustable square pyramid
-|           Adam!!!!
+*           Adam!!!!
  */
 let font
 let cam
@@ -30,11 +30,21 @@ for (let i = 0; i < globe.length; i++) {
 // what is our angle for our Adam?
 let angle = 0
 // what is our amplitude?
-let amp
+let p5amp
+let voice
+let currentVoiceAmp
+let lastVoiceAmp = 0
 
 
 function preload() {
     font = loadFont('fonts/Meiryo-01.ttf')
+    voice = loadSound('adam.mp3')
+}
+
+function touchStarted() {
+    if (getAudioContext().state !== 'running') {
+        getAudioContext().resume().then(r => {});
+    }
 }
 
 function setup() {
@@ -44,11 +54,16 @@ function setup() {
     noFill()
     textFont(font, 10)
     textAlign(LEFT)
+    p5amp = new p5.Amplitude()
+
+    voice.play()
+    cam.rotateX(-PI/2)
 }
 
 function draw() {
     background(234, 34, 24)
     drawBlenderAxisAndText()
+    console.log(p5amp)
     // let's light up the room!
     ambientLight(250)
     directionalLight(0, 0, 10, .5, 1, 0)
@@ -142,17 +157,28 @@ function draw() {
             // to have every square have a different angle
             angle += distance*40
 
+            // we want to average the last amplitude with the current one
+            currentVoiceAmp = (p5amp.getLevel() + lastVoiceAmp) / 2
+            lastVoiceAmp = currentVoiceAmp
+            console.log(currentVoiceAmp)
+
+            // so we've made our voice amplitude...we should make it have a
+            // greater effect in the center and less as we get outer.
+            currentVoiceAmp = 50*map(currentVoiceAmp, 0, 0.25, 0, 1)/(distance*distance)
+            console.log(currentVoiceAmp)
+
             // we need a radius modifier
             if (distance >= max_r/100) {
                 psf = 100
             } else {
                 // what is our amplitude?
-                amp = map(distance, 0, max_r/100, 10, 0)
+                p5amp = map(distance, 0, max_r/100, 10, 0)
                 // also, we want our default radius to give a smoother
                 // transition from the outer-most face that is moving and
                 // the inner-most face that isn't moving.
-                let radius = map(amp, 0, 10, 100, 95)
-                psf = radius + amp * sin(angle)
+                // let's try setting the voice amplitude!
+                let radius = map(p5amp, 0, 10, 100, 95) - currentVoiceAmp
+                psf = radius + p5amp * sin(angle)
 
                 // we need to draw the base triangles
                 fill(180, 100, 100)
