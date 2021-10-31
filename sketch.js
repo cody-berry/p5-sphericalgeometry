@@ -32,13 +32,17 @@ let angle = 0
 // what is our amplitude?
 let p5amp
 let voice
-let currentVoiceAmp
 let lastVoiceAmp = 0
 
 
 function preload() {
-    font = loadFont('fonts/Meiryo-01.ttf')
-    voice = loadSound('adam.mp3')
+    font = loadFont('data/Meiryo-01.ttf')
+    voice = loadSound('data/adam.mp3')
+}
+
+// prevent the context menu from showing up :3 nya~
+document.oncontextmenu = function() {
+    return false;
 }
 
 function touchStarted() {
@@ -55,23 +59,12 @@ function setup() {
     textFont(font, 10)
     textAlign(LEFT)
     p5amp = new p5.Amplitude()
-
     voice.play()
     cam.rotateX(-PI/2)
 }
 
-function draw() {
-    background(234, 34, 24)
-    drawBlenderAxisAndText()
-    console.log(p5amp)
-    // let's light up the room!
-    ambientLight(250)
-    directionalLight(0, 0, 10, .5, 1, 0)
-    // let's also make light material.
-    specularMaterial(223, 34, 24) // specular material reflects less light.
-    // On the contrary, it lights up more.
-    shininess(100)
 
+function setupGlobe() {
     let φ, θ, x, y, z
 
     // let's reset our stroke!
@@ -99,48 +92,39 @@ function draw() {
             globe[i][j] = new p5.Vector(x, y, z)
         }
     }
+}
+
+function draw() {
+    background(223, 29, 35)
+    drawBlenderAxisAndText()
+    // let's light up the room!
+    ambientLight(250)
+    directionalLight(0, 0, 10, .5, 1, 0)
+    // let's also make light material.
+    specularMaterial(223, 34, 24) // specular material reflects less light.
+    // On the contrary, it lights up more.
+    shininess(100)
+
+    setupGlobe()
+    displayGlobe()
+}
+
+function displayGlobe() {
+    console.log(p5amp.getLevel())
 
     let v1, v2, v3, v4
-
-    stroke(0, 0, 50)
-
-    // beginShape()
-    //
-    // // Here's where we're showing everything!
-    // for (let i = 0; i < globe.length-1; i++) {
-    //     for (let j = 0; j < globe[i].length-1; j++) {
-    //         v1 = globe[i][j]
-    //         v2 = globe[i+1][j]
-    //         v3 = globe[i+1][j+1]
-    //         v4 = globe[i][j+1]
-    //         // let's draw points along the sphere!
-    //
-    //         vertex(v1.x, v1.y, v1.z)
-    //         vertex(v2.x, v2.y, v2.z)
-    //         vertex(v3.x, v3.y, v3.z)
-    //         vertex(v4.x, v4.y, v4.z)
-    //     }
-    // }
-    //
-    // endShape()
-
-    // let's fill our pyramid base!
-
     fill(0, 0, 100)
-    noStroke()
 
     let inc_x = 1
     let inc_y = 1
     let max_r = 50
 
-    for (let x_index = 0; x_index < globe.length-inc_x; x_index+=inc_x) {
-        for (let y_index = 0; y_index < globe[x_index].length-inc_y; y_index+=inc_y) {
-            beginShape()
+    for (let x_index = 0; x_index < globe.length - inc_x; x_index += inc_x) {
+        for (let y_index = 0; y_index < globe[x_index].length - inc_y; y_index += inc_y) {
             v1 = globe[x_index][y_index]
             v2 = globe[x_index + inc_x][y_index]
             v3 = globe[x_index + inc_x][y_index + inc_y]
             v4 = globe[x_index][y_index + inc_y]
-
 
             // what is the average of our 4 vertices
             let avg = new p5.Vector(
@@ -150,36 +134,40 @@ function draw() {
             )
 
             let psf
-
             let distance = sqrt(avg.x*avg.x + avg.z*avg.z)
 
             // we want our angle to increase by distance*40 because we want
             // to have every square have a different angle
-            angle += distance*40
+            angle += distance*40;
 
             // we want to average the last amplitude with the current one
-            currentVoiceAmp = (p5amp.getLevel() + lastVoiceAmp) / 2
+            let currentVoiceAmp = (p5amp.getLevel() + lastVoiceAmp) / 2
             lastVoiceAmp = currentVoiceAmp
-            console.log(currentVoiceAmp)
+
+            // we want our angle to increase by distance*40 because we want
+            // to have every square have a different angle
+            angle += distance*40;
 
             // so we've made our voice amplitude...we should make it have a
             // greater effect in the center and less as we get outer.
-            currentVoiceAmp = 50*map(currentVoiceAmp, 0, 0.25, 0, 1)/(distance*distance)
-            console.log(currentVoiceAmp)
+            currentVoiceAmp = 50*map(currentVoiceAmp, 0, 0.25, 0, 1)/
+                (distance*distance)
 
             // we need a radius modifier
+            noStroke()
             if (distance >= max_r/100) {
                 psf = 100
             } else {
                 // what is our amplitude?
-                p5amp = map(distance, 0, max_r/100, 10, 0)
+                let amp = map(distance, 0, max_r/100, 10, 0)
                 // also, we want our default radius to give a smoother
                 // transition from the outer-most face that is moving and
                 // the inner-most face that isn't moving.
                 // let's try setting the voice amplitude!
-                let radius = map(p5amp, 0, 10, 100, 95) - currentVoiceAmp
-                psf = radius + p5amp * sin(angle)
 
+                let radius = map(amp, 0, 10, 100, 95) - currentVoiceAmp
+                // psf = radius + p5amp * sin(angle)
+                psf = radius
                 // we need to draw the base triangles
                 fill(180, 100, 100)
                 beginShape()
@@ -197,10 +185,10 @@ function draw() {
                 vertex(0, 0, 0)
                 vertex(v4.x * psf, v4.y * psf, v4.z * psf)
                 endShape(CLOSE)
-                beginShape()
             }
 
             fill(210, 100, 20)
+            beginShape()
             vertex(v1.x*psf, v1.y*psf, v1.z*psf)
             vertex(v2.x*psf, v2.y*psf, v2.z*psf)
             vertex(v3.x*psf, v3.y*psf, v3.z*psf)
@@ -216,22 +204,6 @@ function draw() {
     fill(180, 100, 100)
     rotateX(PI/2)
     circle(0, 0, 200)
-
-    // let's draw the text!
-    cam.beginHUD(this._renderer, width, height) //
-    // x
-    fill(x_hue, x_sat, BRIGHT) //
-    text("x", 10, height-40) //
-    // y
-    fill(y_hue, y_sat, BRIGHT) //
-    text("y", 10, height-30) //
-    // z
-    fill(z_hue, z_sat, BRIGHT) //
-    text("z", 10, height-20) //
-    cam.endHUD()
-
-    // let's update our angle!
-    angle += 1/20
 }
 
 function drawBlenderAxisAndText() {
@@ -267,4 +239,3 @@ function drawBlenderAxisAndText() {
     stroke(z_hue, z_sat, DARK)
     line(0, 0, 0, 0, 0, -BOUNDARY)
 }
-

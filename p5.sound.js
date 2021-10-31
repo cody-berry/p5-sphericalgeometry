@@ -6059,7 +6059,7 @@ main.inputSources = [];
 
 var audioin_AudioIn =
 function () {
-  function AudioIn() {
+  function AudioIn(errorCallback) {
     audioin_classCallCheck(this, AudioIn);
 
 
