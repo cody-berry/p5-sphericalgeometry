@@ -20,7 +20,7 @@ let x_hue, z_hue, y_hue, x_sat, z_sat, y_sat
 const BRIGHT = 80
 const DARK = 40
 const BOUNDARY = 10000
-const detail = 24
+const detail = 36
 // globe is going to be a two-D array...
 let globe = Array(detail+1)
 // ...so let's fill it!
@@ -107,6 +107,8 @@ function draw() {
 
     setupGlobe()
     displayGlobe()
+
+    angle += 1/20
 }
 
 function displayGlobe() {
@@ -138,7 +140,7 @@ function displayGlobe() {
 
             // we want our angle to increase by distance*40 because we want
             // to have every square have a different angle
-            angle += distance*40;
+            angle += distance*40
 
             // we want to average the last amplitude with the current one
             let currentVoiceAmp = (p5amp.getLevel() + lastVoiceAmp) / 2
@@ -146,12 +148,14 @@ function displayGlobe() {
 
             // we want our angle to increase by distance*40 because we want
             // to have every square have a different angle
-            angle += distance*40;
+            // angle += distance*40
 
             // so we've made our voice amplitude...we should make it have a
             // greater effect in the center and less as we get outer.
-            currentVoiceAmp = 50*map(currentVoiceAmp, 0, 0.25, 0, 1)/
-                (distance*distance)
+            currentVoiceAmp = 25*map(currentVoiceAmp, 0, 0.25, 0, 1)/
+                (distance)
+
+            // console.log(currentVoiceAmp)
 
             // we need a radius modifier
             noStroke()
@@ -160,14 +164,18 @@ function displayGlobe() {
             } else {
                 // what is our amplitude?
                 let amp = map(distance, 0, max_r/100, 10, 0)
+                // currentVoiceAmp = constrain(currentVoiceAmp, 0, 30)
                 // also, we want our default radius to give a smoother
                 // transition from the outer-most face that is moving and
                 // the inner-most face that isn't moving.
                 // let's try setting the voice amplitude!
 
                 let radius = map(amp, 0, 10, 100, 95) - currentVoiceAmp
-                // psf = radius + p5amp * sin(angle)
-                psf = radius
+                psf = radius + amp * sin(angle)
+                psf = constrain(psf, 20, 100)
+                // psf = radius
+
+                console.log(psf)
                 // we need to draw the base triangles
                 fill(180, 100, 100)
                 beginShape()
