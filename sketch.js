@@ -108,7 +108,7 @@ function draw() {
     setupGlobe()
     displayGlobe()
 
-    angle += 1/20
+    angle += 1/10
 }
 
 function displayGlobe() {
@@ -153,7 +153,10 @@ function displayGlobe() {
             // so we've made our voice amplitude...we should make it have a
             // greater effect in the center and less as we get outer.
             currentVoiceAmp = 25*map(currentVoiceAmp, 0, 0.25, 0, 1)/
-                (distance)
+                ((distance*10)**1.9)
+
+            // console.log(distance*10)
+            // console.log((distance*10)**1.9)
 
             // console.log(currentVoiceAmp)
 
@@ -163,15 +166,15 @@ function displayGlobe() {
                 psf = 100
             } else {
                 // what is our amplitude?
-                let amp = map(distance, 0, max_r/100, 10, 0)
+                let amp = map(distance, 0, max_r/100, 10, 5)
                 // currentVoiceAmp = constrain(currentVoiceAmp, 0, 30)
                 // also, we want our default radius to give a smoother
                 // transition from the outer-most face that is moving and
                 // the inner-most face that isn't moving.
                 // let's try setting the voice amplitude!
 
-                let radius = map(amp, 0, 10, 100, 95) - currentVoiceAmp
-                psf = radius + amp * sin(angle)
+                let radius = map(amp, 5, 10, 100, 95) - currentVoiceAmp
+                psf = radius + amp * sin(1/3*angle)
                 psf = constrain(psf, 20, 100)
                 // psf = radius
 
