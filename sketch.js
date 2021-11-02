@@ -115,7 +115,7 @@ function draw() {
 function drawTorus() {
     translate(0, 0, -5)
     fill(0, 0, 100)
-    torus(99, // radius
+    torus(101, // radius
     2, // tube radius
     detail, // detailX
     detail, // detailY
