@@ -47,7 +47,8 @@ document.oncontextmenu = function() {
 
 function touchStarted() {
     if (getAudioContext().state !== 'running') {
-        getAudioContext().resume().then(r => {});
+        getAudioContext().resume().then(r => {
+        });
     }
 }
 
@@ -109,6 +110,19 @@ function draw() {
     displayGlobe()
 
     angle += 1/10
+
+    drawTorus()
+}
+
+// draws 2 toruses around Adam
+function drawTorus() {
+    translate(0, 0, 0)
+    fill(0, 0, 100)
+    torus(97, // radius
+    6, // tube radius
+    detail, // detailX
+    detail, // detailY
+    )
 }
 
 function displayGlobe() {
@@ -176,6 +190,7 @@ function displayGlobe() {
                 let radius = map(amp, 5, 10, 100, 95) - currentVoiceAmp
                 psf = radius + amp * sin(1/3*angle)
                 psf = constrain(psf, 20, 100)
+                psf = map(psf, 20, 100, 50, 100)
                 // psf = radius
 
                 console.log(psf)
@@ -214,6 +229,11 @@ function displayGlobe() {
     // let's add a circular background to our sphere
     fill(180, 100, 100)
     rotateX(PI/2)
+    circle(0, 0, 200)
+    // but also one that's a little bit upward
+    fill(200, 100, 20)
+    strokeWeight(0.1)
+    translate(0, 0, 1)
     circle(0, 0, 200)
 }
 
