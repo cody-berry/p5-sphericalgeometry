@@ -102,27 +102,27 @@ function draw() {
     ambientLight(250)
     directionalLight(0, 0, 10, .5, 1, 0)
     // let's also make light material.
-    specularMaterial(223, 34, 24) // specular material reflects less light.
-    // On the contrary, it lights up more.
-    shininess(100)
 
     setupGlobe()
     displayGlobe()
 
-    angle += 1/10
+    angle -= 1/10
 
     drawTorus()
 }
 
 // draws 2 toruses around Adam
 function drawTorus() {
-    translate(0, 0, 0)
+    translate(0, 0, -5)
     fill(0, 0, 100)
-    torus(97, // radius
-    6, // tube radius
+    torus(99, // radius
+    2, // tube radius
     detail, // detailX
     detail, // detailY
     )
+    fill(200, 100, 20)
+    translate(0, 0, 10)
+    torus(107, 8, detail, detail)
 }
 
 function displayGlobe() {
@@ -133,7 +133,7 @@ function displayGlobe() {
 
     let inc_x = 1
     let inc_y = 1
-    let max_r = 50
+    let max_r = 75
 
     for (let x_index = 0; x_index < globe.length - inc_x; x_index += inc_x) {
         for (let y_index = 0; y_index < globe[x_index].length - inc_y; y_index += inc_y) {
@@ -188,8 +188,8 @@ function displayGlobe() {
                 // let's try setting the voice amplitude!
 
                 let radius = map(amp, 5, 10, 100, 95) - currentVoiceAmp
-                psf = radius + amp * sin(1/3*angle)
-                psf = constrain(psf, 20, 100)
+                psf = radius + amp * sin(2/5*angle) + amp/2
+                psf = constrain(psf, 20, 100+amp)
                 psf = map(psf, 20, 100, 50, 100)
                 // psf = radius
 
@@ -212,6 +212,10 @@ function displayGlobe() {
                 vertex(v4.x * psf, v4.y * psf, v4.z * psf)
                 endShape(CLOSE)
             }
+
+            specularMaterial(223, 34, 24) // specular material reflects less light.
+            // On the contrary, it lights up more.
+            shininess(100)
 
             fill(210, 100, 20)
             beginShape()
