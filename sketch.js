@@ -20,7 +20,7 @@ let x_hue, z_hue, y_hue, x_sat, z_sat, y_sat
 const BRIGHT = 80
 const DARK = 40
 const BOUNDARY = 10000
-const detail = 36
+const detail = 32
 // globe is going to be a two-D array...
 let globe = Array(detail+1)
 // ...so let's fill it!
@@ -133,7 +133,7 @@ function displayGlobe() {
 
     let inc_x = 1
     let inc_y = 1
-    let max_r = 75
+    let max_r = 60
 
     for (let x_index = 0; x_index < globe.length - inc_x; x_index += inc_x) {
         for (let y_index = 0; y_index < globe[x_index].length - inc_y; y_index += inc_y) {
@@ -148,9 +148,17 @@ function displayGlobe() {
                 (v1.y+v2.y+v3.y+v4.y)/4,
                 (v1.z+v2.z+v3.z+v4.z)/4
             )
+            // we also want the pyramids to be randomized a bit
+            avg.x += 0.01
+            avg.y -= 0.01
+            avg.z += 0.01
 
             let psf
             let distance = sqrt(avg.x*avg.x + avg.z*avg.z)
+            // so what is the color?
+            let fromColor = color(180, 12, 98)
+            let toColor = color(184, 57, 95)
+            let c = lerpColor(fromColor, toColor, distance/(max_r/100))
 
             // we want our angle to increase by distance*40 because we want
             // to have every square have a different angle
@@ -195,7 +203,7 @@ function displayGlobe() {
 
                 console.log(psf)
                 // we need to draw the base triangles
-                fill(180, 100, 100)
+                fill(c)
                 beginShape()
                 vertex(v1.x * psf, v1.y * psf, v1.z * psf)
                 vertex(0, 0, 0)
