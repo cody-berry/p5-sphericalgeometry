@@ -7,12 +7,12 @@
 This project is simply the sphere function, but we're recreating everything.
 
 version comments
-.           use the sphere function, easyCam
-.           axis, text
-.           make points using latitude and longitude
-.           make triangles using a separate loop
+.🌟         use the sphere function, easyCam
+.🌟         axis, text
+.🌟         make points using latitude and longitude
+.🌟         make triangles using a separate loop
 .           make adjustable square pyramid
-*           Adam!!!!
+.           Adam!!!!
  */
 let font
 let cam
@@ -20,7 +20,7 @@ let x_hue, z_hue, y_hue, x_sat, z_sat, y_sat
 const BRIGHT = 80
 const DARK = 40
 const BOUNDARY = 10000
-const detail = 32
+const detail = 24
 // globe is going to be a two-D array...
 let globe = Array(detail+1)
 // ...so let's fill it!
@@ -31,13 +31,13 @@ for (let i = 0; i < globe.length; i++) {
 let angle = 0
 // what is our amplitude?
 let p5amp
-let voice
+let artaria
 let lastVoiceAmp = 0
 
 
 function preload() {
     font = loadFont('data/Meiryo-01.ttf')
-    voice = loadSound('data/adam.mp3')
+    artaria = loadSound('data/adam.mp3')
 }
 
 // prevent the context menu from showing up :3 nya~
@@ -59,9 +59,12 @@ function setup() {
     noFill()
     textFont(font, 10)
     textAlign(LEFT)
-    p5amp = new p5.Amplitude()
-    voice.play()
+    p5amp = new p5.Amplitude(0)
+    artaria.play()
     cam.rotateX(-PI/2)
+
+    setupGlobe()
+    frameRate(144)
 }
 
 
@@ -103,12 +106,21 @@ function draw() {
     directionalLight(0, 0, 10, .5, 1, 0)
     // let's also make light material.
 
-    setupGlobe()
+
     displayGlobe()
 
     angle -= 1/10
 
     drawTorus()
+
+
+    cam.beginHUD(p5._renderer, width, height)
+
+    // debug corner
+    text(`frameRate: ${frameRate()}`, 0, height)
+
+
+    cam.endHUD()
 }
 
 // draws 2 toruses around Adam
@@ -126,7 +138,6 @@ function drawTorus() {
 }
 
 function displayGlobe() {
-    console.log(p5amp.getLevel())
 
     let v1, v2, v3, v4
     fill(0, 0, 100)
@@ -201,20 +212,14 @@ function displayGlobe() {
                 psf = map(psf, 20, 100, 50, 100)
                 // psf = radius
 
-                console.log(psf)
+
                 // we need to draw the base triangles
                 fill(c)
                 beginShape()
                 vertex(v1.x * psf, v1.y * psf, v1.z * psf)
                 vertex(0, 0, 0)
                 vertex(v2.x * psf, v2.y * psf, v2.z * psf)
-                endShape(CLOSE)
-                beginShape()
-                vertex(v2.x * psf, v2.y * psf, v2.z * psf)
                 vertex(0, 0, 0)
-                vertex(v3.x * psf, v3.y * psf, v3.z * psf)
-                endShape(CLOSE)
-                beginShape()
                 vertex(v3.x * psf, v3.y * psf, v3.z * psf)
                 vertex(0, 0, 0)
                 vertex(v4.x * psf, v4.y * psf, v4.z * psf)
@@ -242,7 +247,7 @@ function displayGlobe() {
     fill(180, 100, 100)
     rotateX(PI/2)
     circle(0, 0, 200)
-    // but also one that's a little bit upward
+    // but also one that's a bit upward
     fill(200, 100, 20)
     strokeWeight(0.1)
     translate(0, 0, 1)
